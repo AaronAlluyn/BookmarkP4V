@@ -52,6 +52,14 @@ function CreateItem(path) {
     });
     listItem.appendChild(deleteButton);
 
+    // Make the list item draggable
+    listItem.draggable = true;
+
+    // Add dragstart event listener to the list item
+    listItem.addEventListener('dragstart', function(event) {
+        event.dataTransfer.setData('text/plain', event.target.id);
+    });
+    
     return listItem;
 }
 
@@ -73,6 +81,28 @@ document.getElementById('addButton').addEventListener('click', function() {
         pathInput.value = '';
     }
 });
+
+// Add dragover event listener to the list
+document.getElementById('pathList').addEventListener('dragover', function(event) {
+    event.preventDefault(); // Prevent default to allow drop
+});
+
+// Add drop event listener to the list
+document.getElementById('pathList').addEventListener('drop', function(event) {
+    event.preventDefault(); // Prevent default action (open as link for some elements)
+    var id = event.dataTransfer.getData('text/plain');
+    var draggedElement = document.getElementById(id);
+    var dropTarget = event.target.closest('.listItem');
+    var container = event.target.closest('#pathList');
+    container.insertBefore(draggedElement, dropTarget);
+
+    // Update localStorage
+    var updatedPaths = Array.from(container.getElementsByClassName('listItem')).map(function(listItem) {
+        return listItem.getAttribute('data-path'); // Assuming 'data-path' contains the path for each listItem
+    });
+    localStorage.setItem('paths', JSON.stringify(updatedPaths));
+});
+
 
 // Load any paths stored in localStorage when the page loads
 window.onload = function() {
