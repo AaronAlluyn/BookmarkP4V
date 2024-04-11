@@ -12,7 +12,7 @@ function CreateItem(path) {
     // Create a new list item
     var listItem = document.createElement('div');
     listItem.className = 'listItem';
-    listIten.id = path
+    listItem.id = path
     listItem.addEventListener('click', function() {
         NavigateDepot(path);
     });
