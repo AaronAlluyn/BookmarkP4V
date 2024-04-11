@@ -32,24 +32,6 @@
         </div>
         <select id="pathList" size="10"></select>
     </div>
-    <script>
-        document.getElementById('addButton').addEventListener('click', function() {
-            var pathInput = document.getElementById('pathInput');
-            var pathList = document.getElementById('pathList');
-            var newPath = pathInput.value;
-            if (newPath) {
-                var option = document.createElement('option');
-                option.text = newPath;
-                pathList.add(option);
-                pathInput.value = '';
-            }
-        });
-        document.getElementById('pathList').addEventListener('click', function() {
-            var pathList = document.getElementById('pathList');
-            var selectedPath = pathList.options[pathList.selectedIndex].text;
-            NavigateDepot(selectedPath);
-        });
-
-    </script>
+    <script src="bookmarkp4v.js"></script>
 </body>
 </html>
