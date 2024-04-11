@@ -17,20 +17,39 @@
             margin-right: 10px;
         }
         #addButton {
-            width: 200px;
+            width: 200px; /* Double the width of the ADD button */
         }
         #pathList {
-            width: 100%;
+            width: 100%; /* Make the list full width */
             margin: 0 auto;
             height: 200px;
             overflow-y: auto;
-            border: none;
+            border: none; /* Remove the border */
         }
-        #pathList:focus {
-            outline: none;
+        .listItem {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
         }
-        #pathList option:checked {
-            background: transparent;
+        .textStream {
+            flex-basis: 33%;
+            background-color: #ddd;
+            padding: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .textName {
+            flex-basis: 33%;
+            text-align: center;
+        }
+        .textPath {
+            flex-basis: 33%;
+            text-align: center;
+            opacity: 0.5;
         }
     </style>
 </head>
@@ -40,7 +59,7 @@
             <input type="text" id="pathInput" placeholder="Enter depot path">
             <button id="addButton">ADD</button>
         </div>
-        <select id="pathList" size="10"></select>
+        <div id="pathList"></div>
     </div>
     <script src="bookmarkp4v.js"></script>
 </body>
