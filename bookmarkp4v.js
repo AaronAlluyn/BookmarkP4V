@@ -12,6 +12,7 @@ function CreateItem(path) {
     // Create a new list item
     var listItem = document.createElement('div');
     listItem.className = 'listItem';
+    listIten.id = path
     listItem.addEventListener('click', function() {
         NavigateDepot(path);
     });
@@ -94,11 +95,11 @@ document.getElementById('pathList').addEventListener('drop', function(event) {
     var draggedElement = document.getElementById(id);
     var dropTarget = event.target.closest('.listItem');
     var container = event.target.closest('#pathList');
-    container.insertBefore(draggedElement, dropTarget);
+    container.insertBefore(draggedElement, dropTarget.nextSibling);
 
     // Update localStorage
     var updatedPaths = Array.from(container.getElementsByClassName('listItem')).map(function(listItem) {
-        return listItem.getAttribute('data-path'); // Assuming 'data-path' contains the path for each listItem
+        return listItem.id; // Get the path from the id of each list
     });
     localStorage.setItem('paths', JSON.stringify(updatedPaths));
 });
