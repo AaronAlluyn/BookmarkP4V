@@ -1,5 +1,7 @@
 function NavigateDepot(path) {
     p4vjs.writeLog(p4vjs.LogType.INFO, "Navigating to depot path: " + path);
+    var selectionList = [ path ];
+    p4vjs.setSelection(selectionList);
 }
 
 document.getElementById('addButton').addEventListener('click', function() {
