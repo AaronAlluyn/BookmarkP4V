@@ -40,7 +40,7 @@ function CreateItem(path) {
 
     var pathElement = document.createElement('div');
     pathElement.className = 'textPath';
-    pathElement.textContent = '(' + path + ')';
+    pathElement.textContent = path;
     listItem.appendChild(pathElement);
 
     // Create the delete button
