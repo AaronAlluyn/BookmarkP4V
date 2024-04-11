@@ -4,9 +4,19 @@ function NavigateDepot(path) {
 }
 
 function CreateItem(path) {
+    if (!path.startsWith('//') || path.Length <= 2) {
+        return null;
+    }
+    
     // Split the path into the three parts
     var parts = path.split('/');
-    var textStream = '//' + parts[1] + '/' + parts[2] + '/';
+    
+    var textStream = '//' + parts[2];
+    if (parts.length > 3) {
+        textStream += '/' + parts[3];
+    }
+    textStream += '/';
+    
     var textName = parts.pop();
 
     // Create a new list item
