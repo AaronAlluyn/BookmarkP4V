@@ -4,7 +4,7 @@ function NavigateDepot(path) {
 }
 
 function CreateItem(path) {
-    if (!path.startsWith('//') || path.Length <= 2) {
+    if (!path.startsWith('//') || path.length <= 2) {
         return null;
     }
     
@@ -75,22 +75,35 @@ function CreateItem(path) {
 }
 
 document.getElementById('addButton').addEventListener('click', function() {
-    var pathInput = document.getElementById('pathInput');
-    var pathList = document.getElementById('pathList');
-    var newPath = pathInput.value;
-    if (newPath) {
-        // Store the new path in localStorage
+    console.log("ADD button pressed")
+    
+    p4vjs.getSelection().then(pathInputs => {
+        pathInputs = pathInputs.split(',');
+        if (pathInputs == null || pathInputs.length == 0) {
+            console.log("no paths selected")
+            return;
+        }
+    
+        var pathList = document.getElementById('pathList');
         var storedPaths = JSON.parse(localStorage.getItem('paths')) || [];
-        storedPaths.push(newPath);
+        
+        pathInputs.forEach(newPath => {
+            newPath = newPath.replace('p4:///files', '/');
+            console.log("processing path: " + newPath)
+            if (newPath != null && !storedPaths.includes(newPath)) {
+                var listItem = CreateItem(newPath);
+                if (listItem != null) {
+                    pathList.appendChild(listItem);
+                    storedPaths.push(newPath);
+                }
+            }
+        });
+
         localStorage.setItem('paths', JSON.stringify(storedPaths));
-
-        // Add the new list item to the list
-        var listItem = CreateItem(newPath);
-        pathList.appendChild(listItem);
-
-        // Clear the input field
-        pathInput.value = '';
-    }
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+    
 });
 
 // Add dragover event listener to the list
