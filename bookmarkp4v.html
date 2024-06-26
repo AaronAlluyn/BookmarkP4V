@@ -10,16 +10,36 @@
         }
         #inputContainer {
             display: flex;
-            justify-content: center;
+            justify-content: space-evenly;
             margin-bottom: 20px;
         }
         #pathInput {
             flex-grow: 1;
             margin-right: 10px;
         }
-        #addButton {
-            width: 400px;
+        #leftButtons {
+            display: flex;
+            justify-content: flex-start;
+        }
+        #exportButton, #importButton {
+            width: 100px;
             height: 30px;
+            margin: 5px;
+        }
+        #rightButtons {
+            display: flex;
+            justify-content: flex-end;
+        }
+        #addButton {
+            width: 300px;
+            height: 30px;
+            margin: 5px;
+            
+        }
+        #addGroupButton {
+            width: 300px;
+            height: 30px;
+            margin: 5px;
             
         }
         #pathList {
@@ -28,6 +48,16 @@
             margin: 0 auto; 
             overflow-y: auto;
             border: none;
+        }
+        .listItemGroup {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 20px;
         }
         .listItem {
             display: flex;
@@ -68,9 +98,17 @@
 <body>
     <div id="container">
         <div id="inputContainer">
-            <button id="addButton">ADD SELECTED DEPOT PATH(S)</button>
+            <div id="leftButtons">
+                <button id="addButton">ADD SELECTED DEPOT PATH(S)</button>
+                <button id="addGroupButton">CREATE GROUP</button>
+            </div>
+            <div id="rightButtons">
+                <button id="exportButton">EXPORT</button>
+                <button id="importButton">IMPORT</button>
+            </div>
         </div>
         <div id="pathList"></div>
+        <div id="jsonData" style="display: none;">JSON Data</div>
     </div>
     <script src="bookmarkp4v.js"></script>
 </body>
