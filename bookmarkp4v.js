@@ -50,15 +50,7 @@ function CreateItem(path) {
         // Prevent the list item click event from firing
         event.stopPropagation();
 
-        // Remove the item from localStorage
-        var storedPaths = JSON.parse(localStorage.getItem('paths')) || [];
-        var index = storedPaths.indexOf(path);
-        if (index !== -1) {
-            storedPaths.splice(index, 1);
-            localStorage.setItem('paths', JSON.stringify(storedPaths));
-        }
-
-        // Remove the list item from the list
+        RemoveLocalStorageItem(path);
         listItem.remove();
     });
     listItem.appendChild(deleteButton);
@@ -74,9 +66,58 @@ function CreateItem(path) {
     return listItem;
 }
 
-document.getElementById('addButton').addEventListener('click', function() {
-    console.log("ADD button pressed")
+function CreateGroupItem(groupName) {
+    // Create a new group item
+    var groupItem = document.createElement('div');
+    groupItem.className = 'listItemGroup';
+    groupItem.textContent = groupName.replace("group.", "");
+    groupItem.id = groupName;
+
+    // Create the delete button for groups
+    var deleteButton = document.createElement('button');
+    deleteButton.textContent = 'X';
+    deleteButton.addEventListener('click', function(event) {
+        // Prevent the group item click event from firing
+        event.stopPropagation();
+
+        RemoveLocalStorageItem(groupName);
+        groupItem.remove();
+    });
+    groupItem.appendChild(deleteButton);
+
+    // Group items are not draggable
+    groupItem.draggable = true;
+
+    // Add dragstart event listener to the list item
+    groupItem.addEventListener('dragstart', function(event) {
+        event.dataTransfer.setData('text/plain', event.target.id);
+    });
+
+    return groupItem;
+}
+
+function UpdateLocalStorage(pathList) {
+    const paths = [];
+    for (const item of pathList.children) {
+        if (item.id) {
+            paths.push(item.id);
+        }
+    }
     
+    console.log(pathList)
+    localStorage.setItem('bookmarkp4v.items', JSON.stringify(paths));
+}
+
+function RemoveLocalStorageItem(path) {
+    var storedPaths = JSON.parse(localStorage.getItem('bookmarkp4v.items')) || [];
+    var index = storedPaths.indexOf(path);
+    if (index !== -1) {
+        storedPaths.splice(index, 1);
+        localStorage.setItem('bookmarkp4v.items', JSON.stringify(storedPaths));
+    }
+}
+
+document.getElementById('addButton').addEventListener('click', function() {
     p4vjs.getSelection().then(pathInputs => {
         pathInputs = pathInputs.split(',');
         if (pathInputs == null || pathInputs.length == 0) {
@@ -85,55 +126,97 @@ document.getElementById('addButton').addEventListener('click', function() {
         }
     
         var pathList = document.getElementById('pathList');
-        var storedPaths = JSON.parse(localStorage.getItem('paths')) || [];
-        
+
         pathInputs.forEach(newPath => {
             newPath = newPath.replace('p4:///files', '/');
-            console.log("processing path: " + newPath)
-            if (newPath != null && !storedPaths.includes(newPath)) {
+            if (newPath != null) {
                 var listItem = CreateItem(newPath);
                 if (listItem != null) {
                     pathList.appendChild(listItem);
-                    storedPaths.push(newPath);
                 }
             }
         });
 
-        localStorage.setItem('paths', JSON.stringify(storedPaths));
+        UpdateLocalStorage(pathList);
     }).catch(error => {
         console.error('Error:', error);
     });
     
 });
 
-// Add dragover event listener to the list
-document.getElementById('pathList').addEventListener('dragover', function(event) {
-    event.preventDefault(); // Prevent default to allow drop
+document.getElementById('addGroupButton').addEventListener('click', function() {
+    var groupName = prompt('Enter group name:');
+    if (groupName) {
+        groupName = "group." + groupName;
+        var groupItem = CreateGroupItem(groupName);
+        if (groupItem) {
+            pathList.appendChild(groupItem);
+            UpdateLocalStorage(pathList);
+        }
+    }
 });
 
-// Add drop event listener to the list
+document.getElementById('exportButton').addEventListener('click', function() {
+    var pathList = document.getElementById('pathList');
+    var jsonData = document.getElementById('jsonData');
+
+    var storedPaths = JSON.parse(localStorage.getItem('bookmarkp4v.items')) || [];
+    var dataStr = JSON.stringify(storedPaths);
+
+    if (pathList.style.display === "none") {
+        pathList.style.display = "block";
+        jsonData.style.display = "none";
+    } else {
+        pathList.style.display = "none";
+        jsonData.textContent = dataStr;
+        jsonData.style.display = "block";
+    }
+});
+
+document.getElementById('importButton').addEventListener('click', function() {
+    var dataStr = prompt("Please paste your data:");
+
+    if (dataStr != null) {
+        var data = JSON.parse(dataStr);
+        localStorage.setItem('bookmarkp4v.items', JSON.stringify(data));
+        location.reload();
+    }
+
+});
+
+document.getElementById('pathList').addEventListener('dragover', function(event) {
+    event.preventDefault();
+});
+
 document.getElementById('pathList').addEventListener('drop', function(event) {
-    event.preventDefault(); // Prevent default action (open as link for some elements)
+    event.preventDefault();
     var id = event.dataTransfer.getData('text/plain');
     var draggedElement = document.getElementById(id);
-    var dropTarget = event.target.closest('.listItem');
+    var dropTarget = event.target.closest('.listItem, .listItemGroup');
     var container = event.target.closest('#pathList');
     container.insertBefore(draggedElement, dropTarget.nextSibling);
 
     // Update localStorage
-    var updatedPaths = Array.from(container.getElementsByClassName('listItem')).map(function(listItem) {
-        return listItem.id; // Get the path from the id of each list
+    var updatedPaths = Array.from(container.children).map(function(listItem) {
+        return listItem.id;
     });
-    localStorage.setItem('paths', JSON.stringify(updatedPaths));
+    localStorage.setItem('bookmarkp4v.items', JSON.stringify(updatedPaths));
 });
-
 
 // Load any paths stored in localStorage when the page loads
 window.onload = function() {
-    var storedPaths = JSON.parse(localStorage.getItem('paths')) || [];
+    var storedPaths = JSON.parse(localStorage.getItem('bookmarkp4v.items')) || [];
     var pathList = document.getElementById('pathList');
     for (var i = 0; i < storedPaths.length; i++) {
-        var listItem = CreateItem(storedPaths[i]);
-        pathList.appendChild(listItem);
+        var listItem = null;
+        if (storedPaths[i].startsWith("group.")) {
+            listItem = CreateGroupItem(storedPaths[i]);
+        } else {
+            listItem = CreateItem(storedPaths[i]);
+        }
+
+        if (listItem != null) {
+            pathList.appendChild(listItem);
+        }
     }
 };
