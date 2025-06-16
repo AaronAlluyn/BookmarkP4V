@@ -3,5 +3,5 @@ Made this to easily hop to frequently used folders. Didn't like the built-in boo
 
 Tools > Manage Tools > HTML Tabs... > New > Tab > 
 
-URL can be set to point directly at the github page: "https://ybruz.github.io/BookmarkP4V/bookmarkp4v.html".
+URL can be set to point directly at the github page: "https://aaronalluyn.github.io/BookmarkP4V/bookmarkp4v.html".
 Alternatively, download the depot and point URL at: "file:///C:/your-chosen-path/bookmarkp4v.html".
